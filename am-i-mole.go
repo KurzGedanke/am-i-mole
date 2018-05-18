@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 type amIMole struct {
@@ -34,16 +36,16 @@ func getJSON() amIMole {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
 
 	amiMole := amIMole{}
 	json.Unmarshal(body, &amiMole)
-	// fmt.Println(amiMole)
 	return amiMole
 }
 
-func main() {
-	fmt.Println("Hi! Getting data from am.i.mullvad.net!")
-	json := getJSON()
+func printFull(json amIMole) {
 	if json.MullvadExitIP == true {
 		fmt.Println("You ARE connected to Mullvad!")
 		fmt.Println("IP: ", json.IP)
@@ -67,4 +69,69 @@ func main() {
 	}
 
 	fmt.Println("Organisation: ", json.Organization)
+}
+
+func printIP(json amIMole) {
+	fmt.Println(json.IP)
+}
+
+func printConnected(json amIMole) {
+	fmt.Println(json.MullvadExitIP)
+}
+
+func printCountry(json amIMole) {
+	fmt.Println(json.Country)
+}
+
+func printCity(json amIMole) {
+	fmt.Println(json.City)
+}
+
+func printBlacklisted(json amIMole) {
+	fmt.Println(json.Blacklisted.Blacklisted)
+	if json.Blacklisted.Blacklisted == true {
+		for _, blacklist := range json.Blacklisted.Results {
+			fmt.Println(blacklist.Name, ": ", blacklist.Blacklisted)
+			fmt.Println(blacklist.Link)
+		}
+	}
+}
+
+func printOrganization(json amIMole) {
+	fmt.Println(json.Organization)
+}
+
+func main() {
+	ip := flag.Bool("ip", false, "Prints your current IP.")
+	conn := flag.Bool("c", false, "Prints if connected to mullvad.")
+	country := flag.Bool("ct", false, "Prints the country connected in.")
+	city := flag.Bool("cty", false, "Prints the city connected in.")
+	blacklist := flag.Bool("black", false, "Prints if blacklisted.")
+	organization := flag.Bool("o", false, "Prints the organization connecte to.")
+	flag.Parse()
+
+	json := getJSON()
+
+	if *ip == true {
+		printIP(json)
+	}
+	if *conn == true {
+		printConnected(json)
+	}
+	if *country == true {
+		printCountry(json)
+	}
+	if *city == true {
+		printCity(json)
+	}
+	if *blacklist == true {
+		printBlacklisted(json)
+	}
+	if *organization == true {
+		printOrganization(json)
+	}
+
+	if len(os.Args) == 1 {
+		printFull(json)
+	}
 }

@@ -4,6 +4,8 @@
 
 A command line tool to check if you are connect to mullvad.net
 
+## Usage
+
 ```bash
 $ am-i-mole
 Hi! Getting data from am.i.mullvad.net!
@@ -17,15 +19,48 @@ Your IP is NOT blacklisted!
 Organisation:  Amagicom AB
 ```
 
-## Installation
-
-### Homebrew (Coming soon!)
-
 ```bash
-brew install am-i-mole
+$ am-i-mole -h
+  -black
+        Prints if blacklisted.
+  -c
+        Prints if connected to mullvad.
+  -ct
+        Prints the country connected in.
+  -cty
+        Prints the city connected in.
+  -ip
+        Prints your current IP.
+  -o
+        Prints the organization connecte to.
+exit status 2
 ```
 
-### Manual Instalaltion:
+You can define different flags.
+
+```bash
+$ am-i-mole -black -c -ct -cty -ip -o
+185.65.135.168
+true
+Sweden
+<nil>
+false
+Amagicom AB
+```
+
+The values are printed not in order of the command line arguments.
+The oder is:
+
+1. IP: string
+2. Connected: bool
+3. Country: string
+4. City: string
+5. Blacklist: bool
+6. Organization: string
+
+## Installation
+
+### Manual Instalaltion
 
 Download the binary from the [Github Release Page](https://github.com/KurzGedanke/am-i-mole/releases) and put it manually in `usr/local/bin`. Then you can access it from the command line.
 
